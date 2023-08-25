@@ -1,5 +1,13 @@
+=begin
+# 
+# Class Suivi::SuivisCSV
+# -------------------
+# Class qui gère le fichier csv de suivi.Chaque ligne de suivi
+# produit un item SuivisCSV::Row
+# 
+=end
 module Suivi
-class SuiviCSV
+class SuivisCSV
 
   # [Suivi::File] Le fichier CSV suivi
   attr_reader :file
@@ -29,12 +37,14 @@ class SuiviCSV
     filter.merge!(cid: [filter[:cid]]) if filter[:cid] && !filter[:cid].is_a?(Array)
 
     #
-    # Relève de la liste
+    # Relève la liste des suivis passant le filtre
     # 
     options = {headers: true, converters: %i[numeric date]}
-    CSV.foreach(path, **options).select do |row|
+    CSV.foreach(path_prov, **options).select do |row|
       next if filter[:cid] && !filter[:cid].include?(row['Cid'])
       true
+    end.collect do |row|
+      SuivisCSV::Row.new(self, row)
     end
   end
 
@@ -44,6 +54,16 @@ class SuiviCSV
 
   def path
     @path ||= natural_suivi_path
+  end
+
+  # Le chemin d'accès au fichier qui contiendra seulement les lignes
+  # valides (pas les commentaires)
+  def path_prov
+    @path_prov ||= begin
+      ::File.join(folder, ".#{file.affixe}_suivi.csv").tap do |f|
+        ::File.delete(f) if ::File.exist?(f)
+      end
+    end
   end
 
   def natural_suivi_path
@@ -70,15 +90,29 @@ class SuiviCSV
       ::File.exist?(@path_to_products)
     end
 
+    # On retire les commentaires du fichier de suivi et on en profite
+    # pour récupérer le fichier de la définitions des transactions et
+    # des produits.
     def parse_for_comments
-      ::File.foreach(path).each_with_index do |line, idx|
-        next if idx == 0
-        next unless line.start_with?('#')
-        if line.start_with?('# Transactions ')
-          @path_to_transactions = define_absolute_path(line.split(' ')[2].strip)
-        elsif line.start_with?('# Produits')
-          @path_to_products = define_absolute_path(line.split(' ')[2].strip)
+      ref = ::File.open(path_prov,'a')
+      begin
+        ::File.foreach(path).each_with_index do |line, idx|
+          if idx == 0
+            ref.write(line)
+            next 
+          end
+          if line.start_with?('#')
+            if line.start_with?('# Transactions ')
+              @path_to_transactions = define_absolute_path(line.split(' ')[2].strip)
+            elsif line.start_with?('# Produits')
+              @path_to_products = define_absolute_path(line.split(' ')[2].strip)
+            end
+          else
+            ref.write(line)
+          end
         end
+      ensure
+        ref.close
       end
     end
 

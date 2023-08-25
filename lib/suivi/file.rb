@@ -8,10 +8,10 @@ class File
   end
 
 
-  # @instance [Suivi::SuiviCSV] du fichier de suivi, qu'il existe 
+  # @instance [Suivi::SuivisCSV] du fichier de suivi, qu'il existe 
   # déjà ou non.
   def suivi
-    @suivi ||= Suivi::SuiviCSV.new(self)
+    @suivi ||= Suivi::SuivisCSV.new(self)
   end
 
   # @return true si le fichier courant est suivi

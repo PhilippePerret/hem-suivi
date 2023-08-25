@@ -55,8 +55,8 @@ class SuiviFileTest < Minitest::Test
   def test_file_as_property_suivi_de_class_suivi_doc
     assert_respond_to file_avec_suivi, :suivi
     assert_respond_to file_sans_suivi, :suivi
-    assert_equal(Suivi::SuiviCSV, file_avec_suivi.suivi.class, "Le fichier de suivi devrait être de class Suivi::SuiviCSV")
-    assert_equal(Suivi::SuiviCSV,file_sans_suivi.suivi.class, "Le fichier de suivi devrait être de class Suivi::SuiviCSV")
+    assert_equal(Suivi::SuivisCSV, file_avec_suivi.suivi.class, "Le fichier de suivi devrait être de class Suivi::SuivisCSV")
+    assert_equal(Suivi::SuivisCSV,file_sans_suivi.suivi.class, "Le fichier de suivi devrait être de class Suivi::SuivisCSV")
   end
 
 
