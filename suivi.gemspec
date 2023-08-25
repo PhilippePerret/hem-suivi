@@ -15,6 +15,9 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'csv'
 
+  s.add_development_dependency 'minitest'
+  s.add_development_dependency 'minitest-color'
+
   s.metadata["homepage_uri"] = s.homepage
   s.metadata["source_code_uri"] = "https://github.com/PhilippePerret/hem-suivi"
   s.metadata["changelog_uri"] = "https://github.com/PhilippePerret/hem-suivi/CHANGELOG.md"
