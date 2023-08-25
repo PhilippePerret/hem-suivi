@@ -30,5 +30,10 @@ class SuiviCSVTest < Minitest::Test
     refute(file_sans_suivi.suivi.exist?)
   end
 
+  def test_retourne_la_bonne_liste
+    res = file_avec_suivi.suivi.load(cid: 1)
+    puts "res = #{res}"
+  end
+
 
 end #/class Minitest

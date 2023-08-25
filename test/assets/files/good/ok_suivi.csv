@@ -1,0 +1,5 @@
+Id,Date,Cid,Transaction,Produits,Note
+1,2023-07-03,2,AVIS,1+2+4
+2,2023-08-10,1,ACHAT,2+6,
+3,2023-08-15,1,ACHAT,3,
+4,2023-08-20,2,ACHAT,3+9,
