@@ -14,6 +14,7 @@ Gem::Specification.new do |s|
   s.metadata["allowed_push_host"] = "https://github.com/PhilippePerret/hem-suivi"
 
   s.add_dependency 'csv'
+  s.add_dependency 'yaml'
 
   s.add_development_dependency 'minitest'
   s.add_development_dependency 'minitest-color'

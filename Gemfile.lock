@@ -3,6 +3,7 @@ PATH
   specs:
     suivi (0.1.0)
       csv
+      yaml
 
 GEM
   remote: https://rubygems.org/
@@ -12,6 +13,7 @@ GEM
     minitest-color (0.0.2)
       minitest (~> 5)
     rake (12.3.3)
+    yaml (0.2.1)
 
 PLATFORMS
   ruby

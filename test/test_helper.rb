@@ -9,3 +9,5 @@ reporter_options = {
   slow_threshold: true, # pour signaler les tests trop longs
 }
 Minitest::Reporters.use! [Minitest::Reporters::DefaultReporter.new(reporter_options)]
+
+ASSETS_FOLDER = File.join(__dir__, 'assets')

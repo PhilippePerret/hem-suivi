@@ -1,0 +1,7 @@
+file:
+  unknown_path: Le path '%s' est introuvable.
+  bad_extension: Le fichier '%s' doit avoir une extension '.csv'.
+  key_id_required: Le fichier CSV '%s' doit absolument définir la clé 'Id'.
+
+suivi_csv:
+  

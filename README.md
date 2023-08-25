@@ -1,8 +1,14 @@
 # Suivi
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/suivi`. To experiment with that code, run `bin/console` for an interactive prompt.
+## Vocabulaire
 
-TODO: Delete this and the text above, and describe your gem
+**Fichier suivi** : Le fichier CSV contenant une liste à suivre. Typiquement : une liste de clients.
+
+**Fichier de suivi** : Le fichier CSV permettant de suivre le *fichier suivi*, définissant notamment les transactions par clients.
+
+**Fichier des transactions** : Fichier CSV définissant les types de transactions. Par exemple les achats, les demandes d'avis.
+
+**Fichier des produits** : Fichier CSV définissant les produits offerts aux transactions (à l'achat, à la demande d'avis, etc.)
 
 ## Installation
 
