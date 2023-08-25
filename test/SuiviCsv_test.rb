@@ -32,7 +32,10 @@ class SuiviCSVTest < Minitest::Test
 
   def test_retourne_la_bonne_liste
     res = file_avec_suivi.suivi.load(cid: 1)
-    puts "res = #{res}"
+    expected = 2 # ajuster au besoin
+    assert_equal(expected, res.count, "La liste de retour ne devrait comporter que #{expected} éléments")
+    uliste = res.collect {|e| e['Cid'] }.uniq
+    assert_equal(1, uliste.count, "Il ne devrait y avoir qu'un seul client concerné…")
   end
 
 

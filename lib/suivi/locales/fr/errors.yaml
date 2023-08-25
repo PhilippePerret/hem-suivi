@@ -4,4 +4,23 @@ file:
   key_id_required: Le fichier CSV '%s' doit absolument définir la clé 'Id'.
 
 suivi_csv:
-  
+  requires_transactions_path: |
+    Le fichier %s 
+    requiert absolument la définition des transactions.
+    Cette définition se définit en donnant le chemin d'accès au
+    fichier définissant les transaction, par la ligne :
+    '# Transaction /path/to/file/transactions.csv'
+  transactions_file_unfound: |
+    Le fichier des transactions %{tpath}
+    est introuvable…
+    (défini dans le fichier %{path})
+  requires_products_path: |
+    Le fichier %s 
+    requiert absolument la définition des produits.
+    Cette définition se définit en donnant le chemin d'accès au
+    fichier définissant les produits, par la ligne :
+    '# Produits /path/to/file/produits.csv'
+  products_file_unfound: |
+    Le fichier des produits %{tpath}
+    est introuvable…
+    (défini dans le fichier %{path})
