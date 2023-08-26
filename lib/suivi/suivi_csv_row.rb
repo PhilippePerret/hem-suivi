@@ -16,6 +16,7 @@ class Row
 
   # --- Données fixes ---
   def id; @id ||= @csv_row['Id'].freeze  end
+  def date; @date ||= @csv_row['Date'].freeze end
   def client_id; @client_id ||= (@csv_row['Cid']||@csv_row['ClientId']).freeze end
   def transaction_id; @transaction_id ||= @csv_row['Transaction'].freeze end
   def produits_ids; @produits_id ||= @csv_row['Produits'].split('+').freeze end

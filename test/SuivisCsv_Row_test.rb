@@ -24,7 +24,7 @@ class SuivisCSVRowTest < Minitest::Test
 
   def test_on_peut_charger_toutes_les_rangees_de_suivi
     allrows = suivis_csv.load
-    expected = 6
+    expected = 8
     assert_equal(expected, allrows.count, "Il devrait y avoir #{expected} transactions. Il y en a #{allrows.count}…")
 
     prem_trans = allrows.first

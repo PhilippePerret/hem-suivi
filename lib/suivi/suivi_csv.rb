@@ -29,24 +29,59 @@ class SuivisCSV
   #   À commencer par la clé :cid qui permet de filtrer seulement
   #   les transactions d'un utilisateur d'id +cid+
   # 
-  def load(filter = nil)
+  # @param options [Hash]
+  # 
+  #   Pour définir des paramètres de retour
+  # 
+  #   @option sort [Sym] Pour classer la liste (:asc, :desc)
+  # 
+  def find_rows(filter = nil, options = nil)
     #
     # Préparation du filtre
     # 
     filter ||= {}
     filter.merge!(cid: [filter[:cid]]) if filter[:cid] && !filter[:cid].is_a?(Array)
+    filter.merge!(produit: filter[:produits]) if filter.key?(:produits)
+    filter.merge!(produit: [filter[:produit]]) if filter[:produit] && !filter[:produit].is_a?(Array)
+    #
+    # Préparation des options
+    # 
+    options ||= {}
 
     #
     # Relève la liste des suivis passant le filtre
     # 
-    options = {headers: true, converters: %i[numeric date]}
-    CSV.foreach(path_prov, **options).select do |row|
+    csv_opts = {headers: true, converters: %i[numeric date]}
+    rows = CSV.foreach(path_prov, **csv_opts).select do |row|
       next if filter[:cid] && !filter[:cid].include?(row['Cid'])
+      if filter[:produit]
+        has_not_produit = true
+        row['Produits'].to_s.split('+').each do |produit_id|
+          if filter[:produit].include?(produit_id.to_i)
+            has_not_produit = false and break
+          end
+        end
+        next if has_not_produit
+      end
       true
     end.collect do |row|
       SuivisCSV::Row.new(self, row)
     end
+
+    #
+    # Classement éventuel de la liste
+    # 
+    if options[:sort]
+      case options[:sort]
+      when :asc then  rows.sort! { |a, b| a.date <=> b.date }
+      else            rows.sort! { |a, b| b.date <=> a.date }
+      end
+      
+    end
+
+    return rows
   end
+  alias :load :find_rows
 
   def folder
     @folder ||= ::File.dirname(path)

@@ -22,6 +22,61 @@ class SuiviFileTest < Minitest::Test
   end
 
 
+  # --- TESTS MÉTHODES PRINCIPALES ---
+
+
+  def test_obtain_suivi_for_client_and_produit
+    #
+    # Méthode pour obtenir le suivi complet pour un client et un
+    # produit particulier
+    # 
+    res = file_avec_suivi.get_suivis({client: 2, produit: 4})
+    # res doit contenir une liste de 3 transactions pour le produit 4
+    assert_equal 3, rest.count, "La liste devrait contenir 3 transactions"
+    assert_instance_of :Transaction, res.first, "Le premier élément devrait être une instance Transaction"
+    res.each do |tran|
+      assert_equal Produit.get(4), tran.produit, "Le produit de la transaction devrait être le #4. Or c'est le #{tran.produit.id}"
+    end
+    assert_equal 'ACHAT', res[0].transaction_id, "La première transaction devrait être un ACHAT"
+    assert_equal 'AVIS',  res[1].transaction_id, "La deuxième transaction devrait être une demande d'AVIS"
+    assert_equal 'REPONSE',  res[2].transaction_id, "La troisième transaction devrait être une RÉPONSE"
+
+  end
+
+  def test_obtain_produits_filtred_by_transaction
+    #
+    # Test de la méthode pour obtenir des produits qui contiennent 
+    # une certaine transaction mais n'en contiennent pas une autre,
+    # et qui ont été achetés avant une certaine date mais pas avant
+    # une autre, pour tous les clients
+    # 
+    # NOTE : EN FAIT, IL FAUDRAIT QUE CES MÉTHODES DE FILTRE S'APPLIQUENT
+    # PLUTÔT AUX CLIENTS (POUR OBTENIR DES CLIENTS), AUX PRODUITS (POUR
+    # OBTENIR DES PRODUITS) ET AUX TRANSACTIONS (POUR OBTENIR DES
+    # TRANSACTION)
+    # 
+    filter = {
+      transaction:      {id: 'ACHAT', before: '2023-07-01', not_before: '2022-01-01'}, 
+      not_transaction:  'ENQUETE',
+    }
+    res = Produit.find(filter)
+    # Il n'y en a qu'une
+    assert_equal 1, res.count, "Il ne devrait y avoir qu'un seul produit"
+    assert_equal 2, res.first.produit.id, "Le produit concerné devrait être le produit #2"
+  end
+
+  def test_obtain_suivis_for_client
+    #
+    # Méthode pour obtenir le suivi complet pour un client
+    # 
+
+  end
+
+
+
+
+  # --- TESTS MÉTHODES SECONDAIRES ---
+
   def test_class_suivi_file_existe
     assert defined?(Suivi::File), "La classe Suivi::File devrait exister"
   end
