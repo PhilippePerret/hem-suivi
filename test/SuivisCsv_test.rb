@@ -51,17 +51,18 @@ class SuivisCSVTest < Minitest::Test
     # retourner, donc pour tous les produits concernés à chaque
     # transaction.
     actual = res.collect { |row| row.transaction_id }
-    expected = ['ACHAT','AVIS','REPONSE']
+    expected = ['ACHAT','ENQUETE','REPONSE']
     assert_equal(expected, actual)
     res = file_de_suivis.load({cid:2, produit:4}, **{sort: :desc})
     actual = res.collect { |row| row.transaction_id }
-    expected = ['REPONSE','AVIS','ACHAT']
+    expected = ['REPONSE','ENQUETE','ACHAT']
     assert_equal(expected, actual)
   end
 
   def test_suivi_permet_de_obtenir_client_de_produit
     # On veut obtenir tous les clients d'un produit
-    produit = Produit.get(1)
+    suivi_file = File.join(ASSETS_FOLDER,'files','good','ok_suivi.csv')
+    produit = Suivi::Produit.get(1, suivi_file)
 
   end
 

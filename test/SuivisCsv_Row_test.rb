@@ -32,7 +32,7 @@ class SuivisCSVRowTest < Minitest::Test
     assert_respond_to prem_trans, :id
     assert_respond_to prem_trans, :client_id
     assert_respond_to prem_trans, :transaction_id
-    assert_respond_to prem_trans, :transaction
+    assert_respond_to prem_trans, :transaction_type
     assert_respond_to prem_trans, :produits_ids
     assert_respond_to prem_trans, :produits
 

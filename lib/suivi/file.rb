@@ -5,7 +5,54 @@ class File
     @options = defaultize_options(options)
     check_path(path)
     @path = path
+    parse
+    #
+    # Si ce fichier principal possède un fichier de suivi (valide)
+    # on récupère les produits et les types de transaction qu'il
+    # contient.
+    # 
+    suivi.parse_products_and_transaction_type if has_suivi?
   end
+
+  # Pour récupérer tous les clients
+  # 
+  def parse
+    Suivi::Client.init
+    csv_opts = {headers: true, converters: %i[numeric date]}
+    CSV.foreach(path, **csv_opts) do |row|
+      Suivi::Client.add_with_row(row)
+    end
+  end
+
+  # @param options [Hash]
+  # 
+  #   Les options pour la valeur retournée
+  #   @option :as     :transaction
+  def find_suivis(filter, options = nil)
+    options ||= {}
+    if has_suivi?
+      res = suivi.find_rows(filter, options)
+      puts "res in find_suivis: #{res}"
+      if options[:as] == :transaction
+        #
+        # Il faut transformer la liste des résultats en instance
+        # Suivi::Transaction
+        # 
+        liste = []
+        res.each do |row|
+          row.produits.each do |produit|
+            liste << Suivi::Transaction.new(row, produit)
+          end
+        end
+        return liste
+      end
+
+      return res
+    else
+      return []
+    end
+  end
+
 
   #
   # Méthode principale qui permet d'obtenir des suivis en fonction
@@ -46,10 +93,6 @@ class File
   # Une transaction ne concerne qu'un seul produit (une ligne de
   # suivi génère autant de transactions qu'il y a de produits concernés)
   def find_transactions(filter, options = nil)
-    options ||= {}
-    
-  end
-  def find_suivis(filter, options = nil)
     options ||= {}
     
   end

@@ -1,5 +1,19 @@
 # Réflexions
 
+Principes finaux :
+
+* on ne fait pas de filtres complexes. Un filtre sert seulement à relever des transactions qui correspondent à une recherche simple sur des produits, des transactions, des clients. Ensuite, on récupère cette liste pour choisir vraiment ce qu'on veut.
+
+* Toutes les méthodes de classe `find` retournent une table avec :
+  * en clé l'instance de l'objet de la classe (par exemple un Suivi::Client si c'est Suivi::Client::find qui est utilisé)
+  * en valeur une table contenant :
+    * :transactions, la liste des transactions concernant le client
+    * :produits, sauf si c'est `Suivi::Produit::find` qui a été utilisé, la liste des produits concernant le client ou la transaction
+    * :clients, sauf si c'est `Suivi::Client::find` qui a été appelé, la liste des clients concernant la transaction ou le produit
+
+
+
+
 Ce gem a été pensé au départ pour gérer les transactions auprès des clients de la maison d'éditions Icare. Principalement pour faire un suivi rigoureux auprès des lecteurs.
 
 # Étude de cas
@@ -18,10 +32,12 @@ Suivi::Client
 … et sa méthode `find` puisqu'on veut trouver ces clients.
 
 ~~~
-Suivi::Client.find(filter, options)
+Suivi::Client.find(file, filter, options)
 ~~~
 
-Le premier argument va définir le filtre à appliquer à la recherche. On cherche, parmi les suivis, les transactions qui concernent un ou des achats. L'identifiant de cette transaction est 'ACHAT'. Donc :
+Le premier argument définit le chemin d'accès au fichier CSV qui définit les clients. Sans autre précision, un fichier suivi naturel (de nom `<affixe>_suivi.csv`) doit exister et contenir le suivi. Ce fichier de suivi définira le chemin d'accès aux transactions et aux produits.
+
+Le second argument va définir le filtre à appliquer à la recherche. On cherche, parmi les suivis, les transactions qui concernent un ou des achats. L'identifiant de cette transaction est 'ACHAT'. Donc :
 
 ~~~
 filter = {transaction: 'ACHAT'}
@@ -62,7 +78,8 @@ filtre = {
   transaction: { id: 'ACHAT', before: (Time.now - 60) },
   produit: { not_transaction: 'ENQUETE' }
 }
-resultats = Suivi::Client.find(filtre)
+file = /path/to/clients.csv
+resultats = Suivi::Client.find(file, filtre)
 
 ~~~
 
@@ -77,12 +94,14 @@ resultats = [
 Pour produire la liste des destintaires (pour `Mailing` par exemple), il suffira donc de faire :
 
 ~~~
+file = '/path/to/clients.csv'
 filtre = {
   transaction: { id: 'ACHAT', before: (Time.now - 60) },
   produit: { not_transaction: 'ENQUETE' }
 }
-Suivi::Client.find(filtre).collect do |hdata|
-  client = hdata[:client]
+Suivi::Client.find(file, filtre).collect do |hdata|
+  client = hdata[:client] # Instance Suivi::Client
+  # On définit les variables qui vont être utiles pour le mailing
   Receiver.get(client.id).variables.merge!({
     titres: hdata[:produits].collect { |p| p.titre }.pretty_join 
   })

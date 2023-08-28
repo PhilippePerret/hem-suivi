@@ -11,3 +11,5 @@ reporter_options = {
 Minitest::Reporters.use! [Minitest::Reporters::DefaultReporter.new(reporter_options)]
 
 ASSETS_FOLDER = File.join(__dir__, 'assets')
+
+require_relative 'TestsUtils'

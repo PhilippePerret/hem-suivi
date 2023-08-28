@@ -26,20 +26,21 @@ class SuiviFileTest < Minitest::Test
 
 
   def test_obtain_suivi_for_client_and_produit
+    main_file = File.join(ASSETS_FOLDER,'files','good', 'ok.csv')
     #
     # Méthode pour obtenir le suivi complet pour un client et un
     # produit particulier
     # 
-    res = file_avec_suivi.get_suivis({client: 2, produit: 4})
+    res = file_avec_suivi.find_suivis({client: 2, produit: 4, **{as: :transaction}})
     # res doit contenir une liste de 3 transactions pour le produit 4
-    assert_equal 3, rest.count, "La liste devrait contenir 3 transactions"
-    assert_instance_of :Transaction, res.first, "Le premier élément devrait être une instance Transaction"
-    res.each do |tran|
-      assert_equal Produit.get(4), tran.produit, "Le produit de la transaction devrait être le #4. Or c'est le #{tran.produit.id}"
+    assert_equal 3, res.count, "La liste devrait contenir 3 transactions"
+    assert_instance_of Suivi::Transaction, res.first, "Le premier élément devrait être une instance Suivi::Transaction"
+    res.each do |row|
+      assert_equal Suivi::Produit.get(main_file, 4), row.produit, "Le produit de la transaction devrait être le #4. Or c'est le #{tran.produit.id}"
     end
-    assert_equal 'ACHAT', res[0].transaction_id, "La première transaction devrait être un ACHAT"
-    assert_equal 'AVIS',  res[1].transaction_id, "La deuxième transaction devrait être une demande d'AVIS"
-    assert_equal 'REPONSE',  res[2].transaction_id, "La troisième transaction devrait être une RÉPONSE"
+    assert_equal 'ACHAT',   res[0].transaction_id, "La première transaction devrait être un ACHAT"
+    assert_equal 'ENQUETE', res[1].transaction_id, "La deuxième transaction devrait être une demande d'AVIS"
+    assert_equal 'REPONSE', res[2].transaction_id, "La troisième transaction devrait être une RÉPONSE"
 
   end
 
@@ -50,16 +51,12 @@ class SuiviFileTest < Minitest::Test
     # et qui ont été achetés avant une certaine date mais pas avant
     # une autre, pour tous les clients
     # 
-    # NOTE : EN FAIT, IL FAUDRAIT QUE CES MÉTHODES DE FILTRE S'APPLIQUENT
-    # PLUTÔT AUX CLIENTS (POUR OBTENIR DES CLIENTS), AUX PRODUITS (POUR
-    # OBTENIR DES PRODUITS) ET AUX TRANSACTIONS (POUR OBTENIR DES
-    # TRANSACTION)
-    # 
+    main_file = File.join(ASSETS_FOLDER,'files','good', 'ok.csv')
     filter = {
       transaction:      {id: 'ACHAT', before: '2023-07-01', not_before: '2022-01-01'}, 
       not_transaction:  'ENQUETE',
     }
-    res = Produit.find(filter)
+    res = Suivi::Produit.find(main_file, filter)
     # Il n'y en a qu'une
     assert_equal 1, res.count, "Il ne devrait y avoir qu'un seul produit"
     assert_equal 2, res.first.produit.id, "Le produit concerné devrait être le produit #2"
