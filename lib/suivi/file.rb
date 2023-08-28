@@ -32,7 +32,6 @@ class File
     options ||= {}
     if has_suivi?
       res = suivi.find_rows(filter, options)
-      puts "res in find_suivis: #{res}"
       if options[:as] == :transaction
         #
         # Il faut transformer la liste des résultats en instance
@@ -53,48 +52,15 @@ class File
     end
   end
 
-
-  #
-  # Méthode principale qui permet d'obtenir des suivis en fonction
-  # du critère +filter+ en respectant les options +options+.
-  # 
-  # @param filter [Hash]
-  # 
-  #   @option transaction [Hash|Array|Hash]
-  # 
-  #     Filtrer par cette transaction
-  #     Soit la transaction String, 
-  #     Soit une table définissant la transaction, avec :
-  #       @option :id [String] ID de la transaction à obtenir
-  #       @option :before [Date|DateString]
-  #       @option :not_before [Date|DateString]
-  #       @option :after  [Date|DateString]
-  #       @option :not_after [Date|DateString]
-  #     Soit une liste pouvant contenir les deux
-  # 
-  #   @option not_transaction [Hash|Array|String]
-  # 
-  #     Les transactions qu'on ne doit pas trouver pour retenir le
-  #     client/.
-  # 
-  # @param options [Hash]
-  # 
+  # Raccourcis
   def find_produits(filter, options = nil)
-    options ||= {}
+    Suivi::Produit.find(filter, options)
   end
   def find_clients(filter, options = nil)
-    options ||= {}
-    
+    Suivi::Client.find(filter, options)
   end
-  # Une transaction unique (c'est-à-dire par produit, sinon c'est un
-  # suivi)
-  # Un suivi peut concerner plusieurs produits (c'est une rangée dans 
-  # le fichier de suivi)
-  # Une transaction ne concerne qu'un seul produit (une ligne de
-  # suivi génère autant de transactions qu'il y a de produits concernés)
   def find_transactions(filter, options = nil)
-    options ||= {}
-    
+    Suivi::Transaction.find(filter, options)
   end
 
 

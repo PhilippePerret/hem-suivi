@@ -19,7 +19,7 @@ class Row
   def date; @date ||= @csv_row['Date'].freeze end # c'est déjà une Date
   def client_id; @client_id ||= (@csv_row['Cid']||@csv_row['ClientId']).to_i.freeze end
   def transaction_id; @transaction_id ||= @csv_row['Transaction'].freeze end
-  def produits_ids; @produits_id ||= @csv_row['Produits'].split('+').freeze end
+  def produits_ids; @produits_id ||= @csv_row['Produits'].to_s.split('+').collect{|n|n.to_i}.freeze end
 
   # --- Données volatiles ---
   # 

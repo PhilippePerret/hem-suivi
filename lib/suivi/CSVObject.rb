@@ -2,6 +2,13 @@ module Suivi
 class CSVObject
 
   class << self
+
+    # @return l'instance d'identifiant +id+
+    # 
+    def get(id)
+      @items[id] || raise(SuiviError.new("L'instance ##{id} de classe #{self.name} est inconnue…"))
+    end
+
     def init
       @items = {}
     end

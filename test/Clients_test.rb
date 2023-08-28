@@ -47,6 +47,9 @@ class ClientSuiviTest < Minitest::Test
     assert_instance_of Hash, res
     res.each do |client, data_client|
 
+      puts "client : #{client}"
+      puts "data_client : #{data_client}"
+
       assert_instance_of Suivi::Client, client
       assert_instance_of Hash, data_client
 
@@ -54,7 +57,7 @@ class ClientSuiviTest < Minitest::Test
       assert data_client.key?(:rows)
       assert_instance_of Array, data_client[:rows]
       premiere_rangee = data_client[:rows].first
-      assert_instance_of SuivisCSV::Row, premiere_rangee
+      assert_instance_of Suivi::SuivisCSV::Row, premiere_rangee
       
       # - Transactions -
       assert data_client.key?(:transactions)

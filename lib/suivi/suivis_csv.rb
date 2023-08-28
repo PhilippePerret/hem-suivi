@@ -19,7 +19,7 @@ class SuivisCSV
 
 
   def parse_products_and_transaction_type
-    SuiviCSV::TypeTransaction.init
+    Suivi::TypeTransaction.init
     csv_opts = {headers: true, converters: %i[numeric date]}
     CSV.foreach(@path_to_transactions, **csv_opts) do |row|
       Suivi::TypeTransaction.add_with_row(row)
@@ -178,7 +178,7 @@ class SuivisCSV
         # On doit ajouter les produits
         # (sauf groupement par produit)
         # 
-        unless by_key == :produit
+        unless by_key == :produit_id
           table[real_key_value][:produits] << produit unless table[real_key_value][:produits].include?(produit)
         end
 
@@ -186,7 +186,7 @@ class SuivisCSV
         # On doit ajouter les transactions (une par produit)
         # (sauf groupement par transaction)
         # 
-        unless by_key == :transaction
+        unless by_key == :transaction_id
           transaction = Suivi::Transaction.new(row, produit)
           table[real_key_value][:transactions] << transaction
         end
@@ -197,7 +197,7 @@ class SuivisCSV
       # On doit ajouter les clients
       # (sauf groupement par client)
       # 
-      unless by_key == :client
+      unless by_key == :client_id
         table[real_key_value][:clients] << row.client unless table[real_key_value][:clients].include?(row.client)
       end
 
