@@ -52,10 +52,10 @@ class SuivisCSV
   def find_rows(filter = nil, options = nil)
     #
     # Préparation du filtre
-    # (on le simplifie)
+    # (on le simplifie pour n'avoir que les clés :produit, :client,
+    # et :transaction)
     #  
     filter ||= {}
-    #
     filter.merge!(produit: filter.delete(:produits)) if filter.key?(:produits)
     filter.merge!(client: filter.delete(:clients)) if filter.key?(:clients)
     filter.merge!(client: filter.delete(:cid)) if filter.key?(:cid)
@@ -133,24 +133,20 @@ class SuivisCSV
       by_key = :produit_id
     end
     #
-    # La classe pour la clé de table
+    # La classe pour la clé de table et la table vierge
     # 
-    btable = {sujet:[], clients:[], transactions:[], produits:[], rows:[]}
-    classe, blank_table = case by_key
+    classe = case by_key
     when :client_id then
-      btable.delete(:clients)
-      [Suivi::Client, btable]
+      Suivi::Client
     when :transaction_id then 
-      btable.delete(:transactions)
-      [Suivi::Transaction, btable]
+      Suivi::Transaction
     when :produit_id then 
-      btable.delete(:produits)
-      [Suivi::Produit, btable]
+      Suivi::Produit
     end
     #
     # On boucle sur toutes les rangées
     # 
-    rows.each do |row| # SuivisCSV::Row
+    rows.each_with_index do |row, idx| # SuivisCSV::Row
       value_for_key = row.send(by_key)
       #
       # Pour avoir une clé qui soit une instance de l'objet
@@ -160,13 +156,22 @@ class SuivisCSV
       #
       # On initie le groupe pour la valeur +value_for_key+ s'il
       # n'existe pas encore
+      # (en d'autres termes, on crée un nouvel élément de groupe. Si,
+      #  par exemple, on doit regrouper par produit, ça crée un 
+      #  nouvel élément pour ce produit dans la table qui sera 
+      #  retournée)
       # 
       unless table.key?(real_key_value)
-        btable = blank_table.dup.merge!(sujet: real_key_value)
-        table.merge!(real_key_value => btable)
+        table.merge!(real_key_value => {sujet: real_key_value, rows:[], transactions:[], produits:[], clients:[]})
+        # On retire la clé inutile pour ce groupe
+        case by_key
+        when :client_id       then table[real_key_value].delete(:clients)
+        when :transaction_id  then table[real_key_value].delete(:transactions)
+        when :produit_id      then  table[real_key_value].delete(:produits)
+        end
       end
       #
-      # On ajoute cette rangée
+      # On ajoute cette rangée à l'élément
       # 
       table[real_key_value][:rows] << row
 
@@ -232,6 +237,18 @@ class SuivisCSV
 
     if expected.key?(:after)
       return false if row_date < expected[:after]
+    end
+
+    if expected.key?(:produit)
+      return false unless row['Produits'].to_s.split('+').include?(expected[:produit].to_s)
+    end
+
+    if expected.key?(:client)
+      return false if row['Cid'] != expected[:client]
+    end
+
+    if expected.key?(:transaction)
+      return false if row['Transaction'] != expected[:transaction]
     end
 
     return true # ok

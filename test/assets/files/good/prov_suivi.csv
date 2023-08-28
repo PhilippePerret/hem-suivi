@@ -3,5 +3,5 @@ Id,Cid,Produits,Date,Transaction
 # Produits produits.csv
 1,1,1+2,2023-08-28,ACHAT
 2,2,1,2023-08-28,ACHAT
-3,3,1+5,2023-08-28,ACHAT
+3,3,1+3+5,2023-08-28,ACHAT
 4,1,1,2023-08-28,ENQUETE

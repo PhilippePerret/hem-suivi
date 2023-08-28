@@ -47,10 +47,9 @@ class << self
     rows = ["Id,Cid,Produits,Date,Transaction"]
     rows << "# Transactions #{options[:transactions_path]}"
     rows << "# Produits #{options[:produits_path]}"
-    idx = 0
-    data.each do |client:, produits:, transaction:, date:|
-      date = ymd(date) unless date.is_a?(String)
-      rows << "#{idx += 1},#{client},#{produits},#{date},#{transaction}"
+    data.each_with_index do |h, idx|
+      h[:date] = ymd(h[:date]) unless h[:date].is_a?(String)
+      rows << "#{idx + 1},#{h[:client]},#{h[:produits]},#{h[:date]},#{h[:transaction]}"
     end
     rows = rows.join("\n")
     #

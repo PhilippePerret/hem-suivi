@@ -18,5 +18,10 @@ class Transaction
     @produit  = produit
   end
 
+
+  def inspect
+    "<<Suivi::Transaction Client:#{@row.client_id} Produit:#{@produit.id}>>"
+  end
+
 end #/class Transaction
 end #/module Suivi
