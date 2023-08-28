@@ -11,7 +11,34 @@ Principes finaux :
     * :produits, sauf si c'est `Suivi::Produit::find` qui a été utilisé, la liste des produits concernant le client ou la transaction
     * :clients, sauf si c'est `Suivi::Client::find` qui a été appelé, la liste des clients concernant la transaction ou le produit
 
+Par exemple, pour l'opération qui a entrainé ce gem :
+On doit faire un mailing à tous les gens qui ont acheté un livre il y a plus de 2 mois et qui n'ont pas encore reçu l'enquête de satisfaction. L'appel à `Suivi` doit retourner la liste destinataire, avec les livres qu'ils ont achetés et pour lesquels on veut leur avis.
 
+Synopsis
+- Dans un premier temps, on relève toutes les transactions d'achat en les classant par client. Donc on utilise :
+
+  ~~~ruby
+    filtre = {transaction: {id: 'ACHAT', before: Time.now - 60}}
+    resultats = Suivi::Client.find(filtre, path_to_main_file)
+  ~~~
+
+  `resultats` sera une table qui contiendra en clé le client et en valeur une table avec ses suivis et notamment ses `produits` donc ses livres achetés.
+
+  On bouclera sur ces produits/livres pour connaitre ceux qui n'ont pas eux d'enquête. Donc :
+
+  ~~~ruby
+  resultats.each do |client, data_client|
+    data_client.merge!(livres: {} )
+    data_client[:produits].each do |produit|
+        if produit.has_transaction?('ENQUETE') 
+          NOTE : POUR AVOIR ÇA (CI-DESSUS), IL FAUDRAIT, DANS LA BOUCLE QUI RAMASSE LES DONNÉES,
+          METTRE TOUTES LES TRANSACTIONS PROPRES À UN PRODUIT DANS CE PRODUIT (SI ÇA N'EST PAS
+          DÉJÀ FAIT)
+          data_client[:livres].delete(:produit)
+        end
+    end
+  end
+  ~~~
 
 
 Ce gem a été pensé au départ pour gérer les transactions auprès des clients de la maison d'éditions Icare. Principalement pour faire un suivi rigoureux auprès des lecteurs.
