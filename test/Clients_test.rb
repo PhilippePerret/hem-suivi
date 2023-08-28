@@ -47,9 +47,6 @@ class ClientSuiviTest < Minitest::Test
     assert_instance_of Hash, res
     res.each do |client, data_client|
 
-      puts "client : #{client}"
-      puts "data_client : #{data_client}"
-
       assert_instance_of Suivi::Client, client
       assert_instance_of Hash, data_client
 
@@ -64,6 +61,13 @@ class ClientSuiviTest < Minitest::Test
       assert_instance_of Array, data_client[:transactions]
       premiere_transaction = data_client[:transactions].first
       assert_instance_of Suivi::Transaction, premiere_transaction
+      nombre_transactions = case client.id
+      when 1 then 3
+      when 2 then 1
+      when 3 then 2
+      end
+      actual = data_client[:transactions].count
+      assert_equal(nombre_transactions, actual, "Le client ##{client.id} devrait avoir #{nombre_transactions} transactions. Il en a #{actual}…")
       
       # - Produits -
       assert data_client.key?(:produits)
