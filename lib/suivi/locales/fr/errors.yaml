@@ -1,4 +1,7 @@
 file:
+  path_must_be_a_string: |
+    Le chemin d'accès au fichier principal doit être un String (une
+    chaine de caractères). C'est un %s…
   unknown_path: Le path '%s' est introuvable.
   bad_extension: Le fichier '%s' doit avoir une extension '.csv'.
   key_id_required: Le fichier CSV '%s' doit absolument définir la clé 'Id'.

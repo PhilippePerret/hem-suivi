@@ -21,8 +21,7 @@ class << self
   # 
   def get(id, main_file = nil)
     unless main_file.nil?
-      Suivi::File.new(main_file)
-      # Ce qui provoquera l'initialisation de tout
+      Suivi::File.new(main_file) # Ce qui provoquera l'initialisation de tout
     end
     @items[id]
   end
@@ -33,7 +32,10 @@ class << self
   # options +options+
   # 
   def find(main_file, filter, options = nil)
-    [] # Pour le moment
+    main_file = Suivi::File.new(main_file) unless main_file.is_a?(Suivi::File)
+    options ||= {}
+    options.merge!(group_by: :produit)
+    main_file.find_suivis()
   end
 
 end #/<< self Produit

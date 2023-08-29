@@ -43,6 +43,7 @@ class ClientSuiviTest < Minitest::Test
     # Doit retourner tous les clients qui ont acheté des livres
     # il y a plus de deux mois
     res = Suivi::Client.find(good_prov, **filtre)
+    
     assert_instance_of Hash, res
 
     res.each do |client, data_client|

@@ -20,9 +20,15 @@ class CSVObject
 
   end #/<< self class 
 
+  # --- INSTANCE ---
 
   def initialize(data)
     @data = data
+  end
+
+  # Pour obtenir une donnée à partir de <instance>[<key>]
+  def [](key)
+    @data[key.camelize]
   end
 
   # --- Pour récupérer n'importe quelle donnée ---

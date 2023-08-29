@@ -14,6 +14,14 @@ class Row
     @csv_row    = csv_row
   end
 
+  # @return la valeur de la propriété +key+ en la prenant dans la
+  # rangée CSV originale
+  # La clés +key+ peut être exprimée sous forme de Symbol (:key), elle
+  # sera alors transformée en 'Key' (chamélisée)
+  def [](key)
+    @csv_row[key.camelize]
+  end
+
   # --- Données fixes ---
   def id; @id ||= @csv_row['Id'].freeze  end
   def date; @date ||= @csv_row['Date'].freeze end # c'est déjà une Date

@@ -24,6 +24,25 @@ Synopsis
 
   `resultats` sera une table qui contiendra en clé le client et en valeur une table avec ses suivis et notamment ses `produits` donc ses livres achetés.
 
+  \[REPÈRE1]
+
+  On relève tous les produits, c'est-à-dire leur identifiant.
+
+  ~~~ruby
+  produits_ids = resultats.collect do |client, data_client|
+    data_client[:produits].collect { |p| p.id }
+  end.flat
+  ~~~
+
+  On recherche ceux qui ont fait l'objet d'une enquête. Cette fois, ce sont des produits qu'on veut, donc :
+
+  ~~~ruby
+  filtre = {id: produits_ids, transaction: {id: 'ENQUETE'}}
+  Suivi::Produit.find(filtre, main_file)
+  ~~~
+
+  #### Autre façon de faire (moins bonne) à partir de \[REPÈRE1]
+
   On bouclera sur ces produits/livres pour connaitre ceux qui n'ont pas eux d'enquête. Donc :
 
   ~~~ruby
@@ -31,9 +50,12 @@ Synopsis
     data_client.merge!(livres: {} )
     data_client[:produits].each do |produit|
         if produit.has_transaction?('ENQUETE') 
-          NOTE : POUR AVOIR ÇA (CI-DESSUS), IL FAUDRAIT, DANS LA BOUCLE QUI RAMASSE LES DONNÉES,
-          METTRE TOUTES LES TRANSACTIONS PROPRES À UN PRODUIT DANS CE PRODUIT (SI ÇA N'EST PAS
-          DÉJÀ FAIT)
+         # Deux solutions pour ci-dessus : soit on relève ici tous les produits
+         # qui ont eu une enquête et on compare les deux listes, soit on le
+         # fait en coulisse. C'est-à-dire qu'on part du principe que si on veut
+         # savoir quel produit ont reçu une enquête, on va vouloir le savoir
+         # pour tous.
+
           data_client[:livres].delete(:produit)
         end
     end

@@ -61,18 +61,37 @@ class SuivisCSV
     filter.merge!(client: filter.delete(:cid)) if filter.key?(:cid)
     filter.merge!(transaction: filter.delete(:transactions)) if filter.key?(:transactions)
 
+    # Transformation des dates de premier niveau
+    [:before, :after].each do |key|
+      if filter.key?(key)
+        filter[key] = Date.parse(filter[key]) unless filter[key].is_a?(Date) || filter[key].is_a?(Time)
+        filter[key] = filter[key].to_date
+      end
+    end
+
     # Préparation des options
     # 
     options ||= {}
 
-    puts "-> SuivisCSV#find_rows"
-    puts "filter: #{filter}"
+    # puts "-> SuivisCSV#find_rows"
+    # puts "filter: #{filter}"
 
     #
     # Relève la liste des suivis passant le filtre
     # 
     csv_opts = {headers: true, converters: %i[numeric date]}
     rows = CSV.foreach(path_prov, **csv_opts).select do |row|
+      #
+      # Filtre par la date
+      # 
+      if filter.key?(:before)
+        next unless row['Date'] < filter[:before]
+      end
+      if filter.key?(:after)
+        next unless row['Date'] > filter[:after]
+      end
+      
+      # 
       #
       # Filtre par le ou les clients
       # 
@@ -220,7 +239,7 @@ class SuivisCSV
   # la valeur de la colonne +key+ de la rangée CSV +row+ et si les
   # autres conditions contenues dans +expected+ sont remplies
   def match_against?(row, key, expected)
-    expected_id = expected[:id]
+    expected_id = expected.is_a?(Hash) ? expected[:id] : expected
     if expected.is_a?(Array)
       expected_id.include?(row[key]) || return
     else
@@ -228,27 +247,30 @@ class SuivisCSV
     end
 
     # --- Test des autres conditions ---
+    # (seulement si expected est une table)
     # 
-    row_date = row['Date'].to_time
+    if expected.is_a?(Hash)
+      row_date = row['Date'].to_time
 
-    if expected.key?(:before)
-      return false if row_date > expected[:before]
-    end
+      if expected.key?(:before)
+        return false if row_date > expected[:before]
+      end
 
-    if expected.key?(:after)
-      return false if row_date < expected[:after]
-    end
+      if expected.key?(:after)
+        return false if row_date < expected[:after]
+      end
 
-    if expected.key?(:produit)
-      return false unless row['Produits'].to_s.split('+').include?(expected[:produit].to_s)
-    end
+      if expected.key?(:produit)
+        return false unless row['Produits'].to_s.split('+').include?(expected[:produit].to_s)
+      end
 
-    if expected.key?(:client)
-      return false if row['Cid'] != expected[:client]
-    end
+      if expected.key?(:client)
+        return false if row['Cid'] != expected[:client]
+      end
 
-    if expected.key?(:transaction)
-      return false if row['Transaction'] != expected[:transaction]
+      if expected.key?(:transaction)
+        return false if row['Transaction'] != expected[:transaction]
+      end
     end
 
     return true # ok

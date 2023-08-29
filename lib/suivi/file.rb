@@ -99,6 +99,7 @@ class File
 
     # Vérification du fichier
     def check_path(pth)
+      pth.is_a?(String)             || raise(ArgumentError.new(ERRORS[:file][:path_must_be_a_string] % pth.class))
       ::File.exist?(pth)            || raise(ArgumentError.new(ERRORS[:file][:unknown_path] % pth))
       ::File.extname(pth) == '.csv' || raise(ArgumentError.new(ERRORS[:file][:bad_extension] % pth))
       has_key_id?(pth)              || raise(SuiviError.new(ERRORS[:file][:key_id_required] % pth))
