@@ -1,3 +1,11 @@
+# Todo
+
+Deux choses à implémenter : 
+
+* lecture par la fin du fichier CSV
+* traitement de `:only_one` qui doit interrompre la recherche dès qu'un élément a été trouvé
+
+
 # Réflexions
 
 Principes finaux :
@@ -38,8 +46,11 @@ Synopsis
 
   ~~~ruby
   filtre = {id: produits_ids, transaction: {id: 'ENQUETE'}}
-  Suivi::Produit.find(filtre, main_file)
+  options = {as: :id} # pour avoir seulement l'identifiant
+  produits_avect_suivi = Suivi::Produit.find(filtre, main_file, options)
   ~~~
+
+  En croisant les deux listes, on obtient les achats sans enquête.
 
   #### Autre façon de faire (moins bonne) à partir de \[REPÈRE1]
 
